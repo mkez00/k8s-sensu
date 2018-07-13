@@ -44,12 +44,18 @@ EOF
 			kubectl run redis --image=docker.io/redis:latest --port=6379
 			kubectl expose deployment redis --name=redis
 
+
+			kubectl run rabbitmq --image=docker.io/rabbitmq:latest --port=5672
+			kubectl expose deployment rabbitmq --name=rabbitmq
+
+
+
 			# create new deployment for sensu server
-			# kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server"
+			kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server" --env="TRANSPORT_NAME=rabbitmq"
 			# create new deployment for sensu api
-			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --port=4567
+			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --env="TRANSPORT_NAME=rabbitmq" --port=4567
 			# create new deployment for a sensu test client
-			kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=test" --env="CLIENT_SUBSCRIPTIONS=all" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
+			# kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=test" --env="CLIENT_SUBSCRIPTIONS=all" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
 
 			# expose api as service
 			kubectl expose deployment api --name=api
@@ -60,6 +66,7 @@ EOF
 			echo "deb https://sensu.global.ssl.fastly.net/apt xenial main" | sudo tee /etc/apt/sources.list.d/sensu.list
 			apt-get update
 			apt-get install sensu
+			# apt install sensu=1.2.0-1
 
 			# Install uchiwa on master node
 			echo "deb https://sensu.global.ssl.fastly.net/apt sensu main" | sudo tee /etc/apt/sources.list.d/uchiwa.list
@@ -71,6 +78,16 @@ EOF
 			cp /data/transport.json /etc/sensu/conf.d/transport.json
 			# redis.json will need updating with Cluster IP from service
 			cp /data/redis.json /etc/sensu/conf.d/redis.json
+
+			# cd /opt/sensu/embedded/bin
+			sensu-install -p cpu-checks  
+			sensu-install -p disk-checks  
+			sensu-install -p memory-checks  
+			# sensu-install -p nginx  
+			# sensu-install -p process-checks  
+			# sensu-install -p load-checks  
+			# sensu-install -p vmstats  
+			# sensu-install -p mailer
 
 			#CONFIGURE uchiwa config to point to sensu api host available as service
 
