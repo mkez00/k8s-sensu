@@ -23,12 +23,12 @@
 
 Try registering a client using the Sensu API.  Determine the Cluster IP for the API service by executing the command `kubectl get svc`.  Try executing the following curl command:
 
-`
+```
 curl -s -i \
 -X POST \
 -H 'Content-Type: application/json' \
 -d '{"name": "api-example","address": "10.0.2.100","subscriptions":["default"],"environment":"production"}' \
 http://<CLUSTER_IP>:4567/clients
-`
+```
 
 A 201 HTTP response should be returned.  Refresh the Uchiwa dashboard, the badge for clients will be updated with the newly added client.
