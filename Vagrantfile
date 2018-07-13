@@ -43,9 +43,15 @@ EOF
 			kubectl run redis --image=docker.io/redis:latest --port=6379
 			kubectl expose deployment redis --name=redis
 
-			# Download sensu image and expose api port
-			kubectl run sensu --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --port=4567
-			kubectl expose deployment sensu --name=sensu
+			# create new deployment for sensu server
+			kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server"
+			# create new deployment for sensu api
+			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --port=4567
+			# create new deployment for a sensu test client
+			kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=test" --env="CLIENT_SUBSCRIPTIONS=all" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
+
+			# expose api as service
+			kubectl expose deployment api --name=api
 
 			# Install sensu client on master node
 			# sensu client
