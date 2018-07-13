@@ -1,0 +1,126 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+	config.vm.define "master" do |c|
+		c.vm.hostname = 'master'
+		c.vm.box = "ubuntu/xenial64"
+		c.vm.synced_folder "data", "/data"
+		c.vm.network "private_network", ip: "192.168.56.10"
+		c.vm.provision "shell", inline: <<-SHELL
+			sudo su
+
+			# Need to ensure that hostname -i returns a routable IP address.  See: https://kubernetes.io/docs/setup/independent/troubleshooting-kubeadm/
+			sed 's/127\.0\.0\.1.*master.*/192\.168\.56\.10 master/' -i /etc/hosts
+
+			apt-get update 
+			apt-get install -y apt-transport-https
+			curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+			cat <<EOF > /etc/apt/sources.list.d/kubernetes.list  
+deb http://apt.kubernetes.io/ kubernetes-xenial main  
+EOF
+			apt-get update
+			apt-get install -y docker.io
+			apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+
+			# # need to avertise API server address on interface that is reachable for other nodes.  Storing join command from output in shell script for use by worker nodes
+			kubeadm init --apiserver-advertise-address=192.168.56.10 --token=b9e6bb.6746bcc9f8ef8267 --pod-network-cidr=10.244.0.0/16
+			kubeadm token create --print-join-command | grep "kubeadm join" > /data/join-cluster.sh
+
+			# setup kubectl for root
+      		mkdir -p /root/.kube
+      		cp -i /etc/kubernetes/admin.conf /root/.kube/config
+
+      		sysctl net.bridge.bridge-nf-call-iptables=1
+
+      		# using slightly modified flannel config since it requires using enp0s8 as default interface.  See: https://github.com/kubernetes/kubeadm/issues/139#issuecomment-276607463
+      		kubectl apply -f /data/kube-flannel.yml
+
+      		# Download default postgres image and run
+			kubectl run postgres --image=docker.io/postgres:latest --port=5432
+
+			# Download default redis image and expose service to cluster
+			kubectl run redis --image=docker.io/redis:latest --port=6379
+			kubectl expose deployment redis --name=redis
+
+			# Download sensu image and expose api port
+			kubectl run sensu --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --port=4567
+			kubectl expose deployment sensu --name=sensu
+
+			# Install sensu client on master node
+			# sensu client
+			wget -q https://sensu.global.ssl.fastly.net/apt/pubkey.gpg -O- | sudo apt-key add -
+			echo "deb https://sensu.global.ssl.fastly.net/apt xenial main" | sudo tee /etc/apt/sources.list.d/sensu.list
+			apt-get update
+			apt-get install sensu
+
+			# Install uchiwa on master node
+			echo "deb https://sensu.global.ssl.fastly.net/apt sensu main" | sudo tee /etc/apt/sources.list.d/uchiwa.list
+			wget -O- https://sensu.global.ssl.fastly.net/apt/pubkey.gpg |  sudo apt-key add -
+			apt-get update
+			apt-get -y install uchiwa
+
+			# copy config files for Sensu client
+			cp /data/transport.json /etc/sensu/conf.d/transport.json
+			# redis.json will need updating with Cluster IP from service
+			cp /data/redis.json /etc/sensu/conf.d/redis.json
+
+			#CONFIGURE uchiwa config to point to sensu api host available as service
+
+		SHELL
+	end
+
+	$node_script = <<-SHELL
+		sudo su
+
+		# Need to ensure that hostname -i returns a routable IP address.  See: https://kubernetes.io/docs/setup/independent/troubleshooting-kubeadm/
+		sed "s/127\.0\.0\.1.*node${1}.*/192\.168\.56\.${1} node${1}/" -i /etc/hosts
+
+		apt-get update 
+		apt-get install -y apt-transport-https
+		curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+		cat <<EOF > /etc/apt/sources.list.d/kubernetes.list  
+deb http://apt.kubernetes.io/ kubernetes-xenial main  
+EOF
+		apt-get update
+		apt-get install -y docker.io
+		apt-get install -y kubelet kubeadm kubectl kubernetes-cni
+
+		sysctl net.bridge.bridge-nf-call-iptables=1
+
+		# Join node to cluster
+		sh /data/join-cluster.sh
+
+		# Install Sensu client on node
+		wget -q https://sensu.global.ssl.fastly.net/apt/pubkey.gpg -O- | sudo apt-key add -
+		echo "deb https://sensu.global.ssl.fastly.net/apt xenial main" | sudo tee /etc/apt/sources.list.d/sensu.list
+		apt-get update
+		apt-get install sensu
+
+		# copy config files for Sensu client
+		cp /data/transport.json /etc/sensu/conf.d/transport.json
+		# redis.json will need updating with Cluster IP from service
+		cp /data/redis.json /etc/sensu/conf.d/redis.json
+
+	SHELL
+
+	$num_node = 2
+	$num_node.times do |n|
+		node_vm_name = "node#{n+20}"
+		hostname = "node#{n+20}"
+		private_ip = "192.168.56.#{n+20}"
+		node = "#{n+20}"
+
+		config.vm.define node_vm_name do |c|
+			c.vm.hostname = hostname
+			c.vm.box = "ubuntu/xenial64"
+			c.vm.synced_folder "data", "/data"
+			c.vm.network "private_network", ip: private_ip
+			c.vm.provision "shell", run: "always" do |s|
+				s.inline = $node_script
+				s.args = node
+			end
+		end
+	end
+
+end
