@@ -38,13 +38,14 @@ EOF
 
       		# Download default postgres image and run
 			kubectl run postgres --image=docker.io/postgres:latest --port=5432
+			kubectl expose deployment postgres --name=postgres
 
 			# Download default redis image and expose service to cluster
 			kubectl run redis --image=docker.io/redis:latest --port=6379
 			kubectl expose deployment redis --name=redis
 
 			# create new deployment for sensu server
-			kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server"
+			# kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server"
 			# create new deployment for sensu api
 			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --port=4567
 			# create new deployment for a sensu test client
