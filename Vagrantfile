@@ -76,17 +76,27 @@ EOF
 
 			# copy config files for Sensu client
 			cp /data/transport.json /etc/sensu/conf.d/transport.json
+
 			# redis.json will need updating with Cluster IP from service
-			cp /data/redis.json /etc/sensu/conf.d/redis.json
+			#cp /data/redis.json /etc/sensu/conf.d/redis.json
+
+			# rabbitmq.json will need updating with Cluster IP from service
 			cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
+			# TODO update host in rabbitmq.json with Cluster IP
 
 			# copy checks for sensu
 			cp /data/check-* /etc/sensu/conf.d/
+
+			# copy client config
+			cp /data/client.json /etc/sensu/conf.d/client.json
+			# TODO edit client with proper name and address
 
 			cd /opt/sensu/embedded/bin
 			sensu-install -p cpu-checks  
 			sensu-install -p disk-checks  
 			sensu-install -p memory-checks  
+
+			# service sensu-client start
 
 		SHELL
 	end
@@ -120,15 +130,27 @@ EOF
 
 		# copy config files for Sensu client
 		cp /data/transport.json /etc/sensu/conf.d/transport.json
+
 		# redis.json will need updating with Cluster IP from service
-		cp /data/redis.json /etc/sensu/conf.d/redis.json
+		# cp /data/redis.json /etc/sensu/conf.d/redis.json
+
+		# rabbitmq will need updating with Cluster IP from service
+		cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
+		# TODO update host in rabbitmq.json with Cluster IP
+
 		# copy checks for sensu
 		cp /data/check-* /etc/sensu/conf.d/
+
+		# copy client config
+		cp /data/client.json /etc/sensu/conf.d/client.json
+		# TODO edit client with proper name and address
 
 		cd /opt/sensu/embedded/bin
 		sensu-install -p cpu-checks  
 		sensu-install -p disk-checks  
 		sensu-install -p memory-checks 
+
+		# service sensu-client start
 
 	SHELL
 
