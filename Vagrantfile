@@ -85,9 +85,6 @@ EOF
 			# copy config files for Sensu client
 			cp /data/transport.json /etc/sensu/conf.d/transport.json
 
-			# redis.json will need updating with Cluster IP from service
-			#cp /data/redis.json /etc/sensu/conf.d/redis.json
-
 			# rabbitmq.json will need updating with Cluster IP from service
 			cp /data/rabbitmq-sample.json /data/rabbitmq.json
 			rabbitmqstring==$(kubectl get svc | grep rabbitmq)
@@ -97,10 +94,6 @@ EOF
 
 			# copy checks for sensu
 			cp /data/check-* /etc/sensu/conf.d/
-
-			# copy client config
-			# cp /data/client.json /etc/sensu/conf.d/client.json
-			# TODO edit client with proper name and address
 
 			cd /opt/sensu/embedded/bin
 			sensu-install -p cpu-checks  
@@ -147,16 +140,9 @@ EOF
 
 		# rabbitmq will need updating with Cluster IP from service
 		cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
-		# rabbitmqstring==$(kubectl get svc | grep rabbitmq)
-		# rabbitmq=$(echo "$rabbitmqstring" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
-		# sed -i -e 's/CLUSTER_IP/'"$rabbitmq"'/g' /etc/sensu/conf.d/rabbitmq.json
 
 		# copy checks for sensu
 		cp /data/check-* /etc/sensu/conf.d/
-
-		# copy client config
-		# cp /data/client.json /etc/sensu/conf.d/client.json
-		# TODO edit client with proper name and address
 
 		cd /opt/sensu/embedded/bin
 		sensu-install -p cpu-checks  
