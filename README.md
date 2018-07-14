@@ -15,7 +15,7 @@ NOTE: The Sensu server will not be accessible until Kubernetes nodes are provisi
 
 # Troubleshooting
 
-If Uchiwa reports that the datacenter is not available even after all pods have been successfully created, restart the API service by executing the following on the master node `vagrant ssh master`:
+If Uchiwa reports that the datacenter is not available even after all pods have been successfully created, restart the API service by executing the following on the master node (access the master node via `vagrant ssh master`):
 
 ```
 kubectl scale --replicas=0 deployment/api
