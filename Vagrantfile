@@ -80,19 +80,13 @@ EOF
 			cp /data/redis.json /etc/sensu/conf.d/redis.json
 			cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
 
+			# copy checks for sensu
+			cp /data/check-* /etc/sensu/conf.d/
+
 			cd /opt/sensu/embedded/bin
 			sensu-install -p cpu-checks  
 			sensu-install -p disk-checks  
 			sensu-install -p memory-checks  
-			# sensu-install -p nginx  
-			# sensu-install -p process-checks  
-			# sensu-install -p load-checks  
-			# sensu-install -p vmstats  
-			# sensu-install -p mailer
-
-			# service sensu-client start
-
-			#CONFIGURE uchiwa config to point to sensu api host available as service
 
 		SHELL
 	end
@@ -128,7 +122,9 @@ EOF
 		cp /data/transport.json /etc/sensu/conf.d/transport.json
 		# redis.json will need updating with Cluster IP from service
 		cp /data/redis.json /etc/sensu/conf.d/redis.json
-		
+		# copy checks for sensu
+		cp /data/check-* /etc/sensu/conf.d/
+
 		cd /opt/sensu/embedded/bin
 		sensu-install -p cpu-checks  
 		sensu-install -p disk-checks  
