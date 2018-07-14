@@ -1,7 +1,7 @@
 {
           "client": {
-            "name": "master",
-            "address": "127.0.0.1",
+            "name": "NODE_NAME",
+            "address": "NODE_ADDRESS",
             "environment": "default",
             "subscriptions": [ "ALL"],
             
