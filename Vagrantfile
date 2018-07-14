@@ -79,7 +79,7 @@ EOF
 			apistring=$(kubectl get svc | grep api)
 			api=$(echo "$apistring" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
 			sed -i -e 's/API_IP/'"$api"'/g' /etc/sensu/uchiwa.json
-			
+
 			service uchiwa start
 
 			# copy config files for Sensu client
@@ -89,10 +89,11 @@ EOF
 			#cp /data/redis.json /etc/sensu/conf.d/redis.json
 
 			# rabbitmq.json will need updating with Cluster IP from service
-			cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
+			cp /data/rabbitmq-sample.json /data/rabbitmq.json
 			rabbitmqstring==$(kubectl get svc | grep rabbitmq)
 			rabbitmq=$(echo "$rabbitmqstring" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
-			sed -i -e 's/CLUSTER_IP/'"$rabbitmq"'/g' /etc/sensu/conf.d/rabbitmq.json
+			sed -i -e 's/CLUSTER_IP/'"$rabbitmq"'/g' /data/rabbitmq.json
+			cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
 
 			# copy checks for sensu
 			cp /data/check-* /etc/sensu/conf.d/
@@ -146,9 +147,9 @@ EOF
 
 		# rabbitmq will need updating with Cluster IP from service
 		cp /data/rabbitmq.json /etc/sensu/conf.d/rabbitmq.json
-		rabbitmqstring==$(kubectl get svc | grep rabbitmq)
-		rabbitmq=$(echo "$rabbitmqstring" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
-		sed -i -e 's/CLUSTER_IP/'"$rabbitmq"'/g' /etc/sensu/conf.d/rabbitmq.json
+		# rabbitmqstring==$(kubectl get svc | grep rabbitmq)
+		# rabbitmq=$(echo "$rabbitmqstring" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+')
+		# sed -i -e 's/CLUSTER_IP/'"$rabbitmq"'/g' /etc/sensu/conf.d/rabbitmq.json
 
 		# copy checks for sensu
 		cp /data/check-* /etc/sensu/conf.d/

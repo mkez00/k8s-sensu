@@ -1,0 +1,9 @@
+{
+ "rabbitmq":{
+  "host": "CLUSTER_IP",
+  "port": "5672",
+  "vhost": "/",
+  "user": "guest",
+  "pass": "guest"
+ }
+}
