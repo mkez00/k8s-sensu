@@ -36,6 +36,9 @@ EOF
       		# using slightly modified flannel config since it requires using enp0s8 as default interface.  See: https://github.com/kubernetes/kubeadm/issues/139#issuecomment-276607463
       		kubectl apply -f /data/kube-flannel.yml
 
+      		# configure hostPath volume to store config files for sensu
+      		# kubectl create -f /data/pv-volume.yaml
+
       		# Download default postgres image and run
 			kubectl run postgres --image=docker.io/postgres:latest --port=5432
 			kubectl expose deployment postgres --name=postgres
@@ -49,13 +52,12 @@ EOF
 			kubectl expose deployment rabbitmq --name=rabbitmq
 
 
-
 			# create new deployment for sensu server
 			kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server" --env="TRANSPORT_NAME=rabbitmq"
 			# create new deployment for sensu api
 			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --env="TRANSPORT_NAME=rabbitmq" --port=4567
 			# create new deployment for a sensu test client
-			# kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=test" --env="CLIENT_SUBSCRIPTIONS=all" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
+			# kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=pod" --env="CLIENT_SUBSCRIPTIONS=ALL" --env="TRANSPORT_NAME=rabbitmq" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
 
 			# expose api as service
 			kubectl expose deployment api --name=api

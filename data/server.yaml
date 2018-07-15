@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server
+spec:
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+      - name: server
+        image: docker.io/sstarcher/sensu:latest
+        volumeMounts:
+        - mountPath: /etc/sensu/check.d/
+          name: sensu-server-volume
+        env:
+        - name: SENSU_SERVICE
+          value: server
+        - name: TRANSPORT_NAME
+          value: rabbitmq
+      volumes:
+      - name: sensu-server-volume
+        hostPath:
+          path: /data/config/
