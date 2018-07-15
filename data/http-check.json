@@ -1,0 +1,9 @@
+{
+  "checks": {
+    "sensu-website": {
+      "command": "check-http.rb -u https://sensuapp.org",
+      "subscribers": ["postgres"],
+      "interval": 60
+    }
+  }
+}

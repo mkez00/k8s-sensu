@@ -17,6 +17,7 @@ spec:
         volumeMounts:
         - mountPath: /etc/sensu/check.d/
           name: sensu-server-volume
+          readOnly: true
         env:
         - name: SENSU_SERVICE
           value: server

@@ -47,17 +47,19 @@ EOF
 			kubectl run redis --image=docker.io/redis:latest --port=6379
 			kubectl expose deployment redis --name=redis
 
-
 			kubectl run rabbitmq --image=docker.io/rabbitmq:latest --port=5672
 			kubectl expose deployment rabbitmq --name=rabbitmq
 
-
 			# create new deployment for sensu server
-			kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server" --env="TRANSPORT_NAME=rabbitmq"
+			# kubectl run server --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=server" --env="TRANSPORT_NAME=rabbitmq"
+			kubectl create -f /data/server.yaml
+
 			# create new deployment for sensu api
 			kubectl run api --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=api" --env="TRANSPORT_NAME=rabbitmq" --port=4567
+
 			# create new deployment for a sensu test client
 			# kubectl run client --image=docker.io/sstarcher/sensu:latest --env="SENSU_SERVICE=client" --env="CLIENT_NAME=pod" --env="CLIENT_SUBSCRIPTIONS=ALL" --env="TRANSPORT_NAME=rabbitmq" --env="CLIENT_ADDRESS=127.0.0.1" --port=3030
+			kubectl create -f /data/client.yaml
 
 			# expose api as service
 			kubectl expose deployment api --name=api

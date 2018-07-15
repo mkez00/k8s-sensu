@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client
+spec:
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: docker.io/sstarcher/sensu:latest
+        env:
+        - name: SENSU_SERVICE
+          value: client
+        - name: CLIENT_NAME
+          value: postgrescheck
+        - name: CLIENT_ADDRESS
+          value: 127.0.0.1
+        - name: TRANSPORT_NAME
+          value: rabbitmq
+        - name: RUNTIME_INSTALL
+          value: sstarcher/http
+        - name: CLIENT_SUBSCRIPTIONS
+          value: postgres
