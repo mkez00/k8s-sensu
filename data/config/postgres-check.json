@@ -1,7 +1,7 @@
 {
   "checks": {
-    "sensu-website": {
-      "command": "check-http.rb -u https://sensuapp.org",
+    "postgres-available": {
+      "command": "check-postgres-alive.rb",
       "subscribers": ["postgres"],
       "interval": 60
     }

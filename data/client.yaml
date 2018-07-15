@@ -24,6 +24,6 @@ spec:
         - name: TRANSPORT_NAME
           value: rabbitmq
         - name: RUNTIME_INSTALL
-          value: sstarcher/http
+          value: sstarcher/http,postgres
         - name: CLIENT_SUBSCRIPTIONS
           value: postgres

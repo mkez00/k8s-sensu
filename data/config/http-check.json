@@ -1,7 +1,7 @@
 {
   "checks": {
-    "sensu-website": {
-      "command": "check-http.rb -u https://sensuapp.org",
+    "random-check": {
+      "command": "check-http.rb -u https://www.google.ca",
       "subscribers": ["postgres"],
       "interval": 60
     }
