@@ -1,7 +1,7 @@
 {
   "checks": {
     "postgres-available": {
-      "command": "check-postgres-alive.rb",
+      "command": "check-postgres-alive.rb --hostname postgres",
       "subscribers": ["postgres"],
       "interval": 60
     }
