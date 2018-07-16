@@ -36,9 +36,6 @@ EOF
       		# using slightly modified flannel config since it requires using enp0s8 as default interface.  See: https://github.com/kubernetes/kubeadm/issues/139#issuecomment-276607463
       		kubectl apply -f /data/kube-flannel.yml
 
-      		# configure hostPath volume to store config files for sensu
-      		# kubectl create -f /data/pv-volume.yaml
-
       		# Download default postgres image and run
 			kubectl run postgres --image=docker.io/postgres:latest --port=5432
 			kubectl expose deployment postgres --name=postgres
@@ -70,7 +67,6 @@ EOF
 			echo "deb https://sensu.global.ssl.fastly.net/apt xenial main" | sudo tee /etc/apt/sources.list.d/sensu.list
 			apt-get update
 			apt-get install sensu
-			# apt install sensu=1.2.0-1
 
 			# Install uchiwa on master node
 			echo "deb https://sensu.global.ssl.fastly.net/apt sensu main" | sudo tee /etc/apt/sources.list.d/uchiwa.list

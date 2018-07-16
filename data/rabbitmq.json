@@ -1,6 +1,6 @@
 {
  "rabbitmq":{
-  "host": "CLUSTER_IP",
+  "host": "10.99.37.56",
   "port": "5672",
   "vhost": "/",
   "user": "guest",
