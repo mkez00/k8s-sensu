@@ -62,7 +62,6 @@ EOF
 			kubectl expose deployment api --name=api
 
 			# Install sensu client on master node
-			# sensu client
 			wget -q https://sensu.global.ssl.fastly.net/apt/pubkey.gpg -O- | sudo apt-key add -
 			echo "deb https://sensu.global.ssl.fastly.net/apt xenial main" | sudo tee /etc/apt/sources.list.d/sensu.list
 			apt-get update
