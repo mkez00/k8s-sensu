@@ -31,6 +31,11 @@ EOF
       		mkdir -p /root/.kube
       		cp -i /etc/kubernetes/admin.conf /root/.kube/config
 
+      		# setup kubectl for vagrant user
+      		mkdir -p /home/vagrant/.kube
+      		cp -i /etc/kubernetes/admin.conf /home/vagrant/.kube/config
+      		chown vagrant:vagrant /home/vagrant/.kube/config
+
       		sysctl net.bridge.bridge-nf-call-iptables=1
 
       		# using slightly modified flannel config since it requires using enp0s8 as default interface.  See: https://github.com/kubernetes/kubeadm/issues/139#issuecomment-276607463
