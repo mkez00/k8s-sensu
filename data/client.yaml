@@ -18,7 +18,7 @@ spec:
         - name: SENSU_SERVICE
           value: client
         - name: CLIENT_NAME
-          value: postgrescheck
+          value: nginxcheck
         - name: CLIENT_ADDRESS
           value: 127.0.0.1
         - name: TRANSPORT_NAME
@@ -27,4 +27,4 @@ spec:
           value: sstarcher/http
           # value: sstarcher/http,postgres
         - name: CLIENT_SUBSCRIPTIONS
-          value: postgres
+          value: nginx

@@ -1,8 +1,8 @@
 {
   "checks": {
-    "random-check": {
-      "command": "check-http.rb -u https://www.google.ca",
-      "subscribers": ["postgres"],
+    "nginx-available": {
+      "command": "check-http.rb -u http://nginx",
+      "subscribers": ["nginx"],
       "interval": 60
     }
   }

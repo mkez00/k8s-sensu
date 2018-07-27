@@ -41,9 +41,9 @@ EOF
       		# using slightly modified flannel config since it requires using enp0s8 as default interface.  See: https://github.com/kubernetes/kubeadm/issues/139#issuecomment-276607463
       		kubectl apply -f /data/kube-flannel.yml
 
-      		# Download default postgres image and run
-			kubectl run postgres --image=docker.io/postgres:latest --port=5432
-			kubectl expose deployment postgres --name=postgres
+      		# Download default nginx image and run
+			kubectl run nginx --image=docker.io/nginx:latest --port=80
+			kubectl expose deployment nginx --name=nginx
 
 			# Download default redis image and expose service to cluster
 			kubectl run redis --image=docker.io/redis:latest --port=6379

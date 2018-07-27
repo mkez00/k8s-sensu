@@ -1,6 +1,6 @@
 {
  "rabbitmq":{
-  "host": "10.99.37.56",
+  "host": "10.107.95.16",
   "port": "5672",
   "vhost": "/",
   "user": "guest",
